@@ -1,2 +1,6 @@
 # Byte-compiled / optimized / DLL files
 raw_data/
+pycache/
+__pycache__/
+supplementary_info/
+processed_data/
