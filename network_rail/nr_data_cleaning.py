@@ -8,9 +8,14 @@ Functions included:
         Returns list of data files in raw data directory.
     - load_nr_data
         Loads data from a file into a DataFrame.
+    - get_full_stn_names
+        Converts station codes to full station names.
+    - get_full_incident_codes
+        Converts incident codes to full descriptions and gets weather flag.
         
 Author: CL
 """
+
 # Global imports
 import os
 import polars as pl
@@ -20,15 +25,17 @@ def clean_nr_data():
     """
     Main cleaning function.
 
-    Filters the delay attribution data for records relevant to Cornwall.
+    Filters the delay attribution data for records relevant to Cornwall. Adds 
+    flags based on whether service has been cancelled and whether delay was
+    weather related.
+    Saves cleaned data to csv file in processed data directory.
 
     Parameters
     -----------
 
     Returns
     ----------
-    cleaned_df: DataFrame
-        Cleaned DataFrame containing only records relevant to Cornwall.
+    None
 
     Notes
     ---------
@@ -42,7 +49,7 @@ def clean_nr_data():
     # Convert station codes to full station names
     raw_df = get_full_stn_names(raw_df)
     
-    # Convert incident codes to full descriptions
+    # Convert incident codes to full descriptions and get weather flag
     raw_df = get_full_incident_codes(raw_df)
     
     # Only keep files where delay incident was in Cornwall
@@ -62,8 +69,13 @@ def clean_nr_data():
         pl.col("EVENT_TYPE").is_in(cx_events).alias("IS_CANCELLED")
     )
     
+    # convert ORGIN_DEPARTURE_DATE to datetime
+    raw_df = raw_df.with_columns(
+        pl.col("ORIGIN_DEPARTURE_DATE").str.strptime(pl.Date, format="%d-%b-%y")
+    )
+    
     # only keep important cols
-    raw_df = raw_df.select(
+    cleaned_df = raw_df.select(
         "TRAIN_SERVICE_CODE",
         "ORIGIN_DEPARTURE_DATE", 
         "PLANNED_ORIGIN_LOCATION_NAME",
@@ -74,16 +86,12 @@ def clean_nr_data():
         "IS_CANCELLED",
         "INCIDENT_REASON",
         "INCIDENT_DESCRIPTION",
-        "is_weather_related",
+        "IS_WEATHER_RELATED",
         "EVENT_TYPE"
     )
-
-    # save tail of df to csv
-    raw_df.tail(100).write_csv(
-        "network_rail/processed_data/raw_data_tail.csv"
+    cleaned_df.write_csv(
+        "network_rail/processed_data/cleaned_nr_data.csv"
         )
-        
-    return None
 
 def get_nr_files():
     """
@@ -204,6 +212,7 @@ def get_full_incident_codes(df):
     df: DataFrame
         DataFrame containing full incident descriptions.
     """
+    
     # Get excel worksheet with station code to name mapping
     supp_file = ("network_rail/supplementary_info/" 
                  "Transparency page Attribution Glossary.xlsx")
@@ -213,21 +222,18 @@ def get_full_incident_codes(df):
         ).select(
             pl.col("Incident Reason"),
             pl.col("Incident Reason Description"),
-            pl.col("is_weather_related")
+            pl.col("IS_WEATHER_RELATED")
         )
     code_mapping = code_mapping.rename({
-        "Incident Reason": "incident_code",
-        "Incident Reason Description": "incident_description",
-        "is_weather_related": "is_weather_related"
+        "Incident Reason": "INCIDENT_REASON",
+        "Incident Reason Description": "INCIDENT_REASON_DESCRIPTION",
+        "IS_WEATHER_RELATED": "IS_WEATHER_RELATED"
     })
     # replace df cols
     df = df.join(
         code_mapping, 
         left_on="INCIDENT_REASON", 
-        right_on="incident_code", 
+        right_on="INCIDENT_REASON", 
         how="left"
-        ).rename(
-            {"incident_description": "INCIDENT_REASON_DESCRIPTION"}
-            )
-        
+        )
     return df

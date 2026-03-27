@@ -4,3 +4,4 @@ pycache/
 __pycache__/
 supplementary_info/
 processed_data/
+plots/
