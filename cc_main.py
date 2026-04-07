@@ -8,7 +8,7 @@ import os
 import polars as pl
 
 from network_rail.nr_data_cleaning import clean_nr_data
-from network_rail.nr_plotting import plot_all_delays
+from network_rail.nr_plotting import plot_all_delays, plot_delays_monthly
 
 def main():
     # Check if data has already been cleaned 
@@ -21,12 +21,19 @@ def main():
     else:
         print("Cleaned data file found. Loading cleaned data...")
     
-    # when reading, ensure ORIGIN_DEPARTURE_DATE is read as datetime
     data = pl.read_csv(
         "network_rail/processed_data/cleaned_nr_data.csv",
         schema_overrides={"ORIGIN_DEPARTURE_DATE": pl.Date}
         )
     plot_all_delays(data)
+    plot_delays_monthly(data, month=1, year=2026, 
+                        annotations=[{"name": "Storm Goretti", 
+                                      "start": 8, "end": 9}, 
+                                     {"name": "Storm Chandra", 
+                                      "start": 26, "end": 27},
+                                     {"name": "Storm Ingrid", 
+                                      "start": 23, "end": 24}
+                                     ])
     
 if __name__ == "__main__":
     main()
