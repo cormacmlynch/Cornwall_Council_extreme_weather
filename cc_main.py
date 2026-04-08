@@ -23,16 +23,23 @@ def main():
     
     data = pl.read_csv(
         "network_rail/processed_data/cleaned_nr_data.csv",
-        schema_overrides={"ORIGIN_DEPARTURE_DATE": pl.Date}
+        schema_overrides={"ORIGIN_DEPARTURE_DATE": pl.Date,
+                          "PFPI_MINUTES": pl.Float32,}
         )
     plot_all_delays(data)
-    plot_delays_monthly(data, month=1, year=2026, 
-                        annotations=[{"name": "Storm Goretti", 
-                                      "start": 8, "end": 9}, 
-                                     {"name": "Storm Chandra", 
-                                      "start": 26, "end": 27},
-                                     {"name": "Storm Ingrid", 
-                                      "start": 23, "end": 24}
+    # January 2026
+    # plot_delays_monthly(data, month=1, year=2026, 
+    #                     annotations=[{"name": "Storm Goretti", 
+    #                                   "start": 8, "end": 9}, 
+    #                                  {"name": "Storm Chandra", 
+    #                                   "start": 26, "end": 27},
+    #                                  {"name": "Storm Ingrid", 
+    #                                   "start": 23, "end": 24}
+    #                                  ])
+    # November 2024
+    plot_delays_monthly(data, month=11, year=2024, 
+                        annotations=[{"name": "Storm Bert", 
+                                      "start": 22, "end": 25}
                                      ])
     
 if __name__ == "__main__":
