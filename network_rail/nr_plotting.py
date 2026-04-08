@@ -110,19 +110,27 @@ def plot_delays_monthly(df, month, year, annotations = None):
     # get series of non weather related delays and weather related delays for plotting
     delay_weather = df.filter(pl.col("IS_WEATHER_RELATED") == True)
     delay_non_weather = df.filter(pl.col("IS_WEATHER_RELATED") == False)
+    
+    non_weather = delay_non_weather["TOTAL_DELAY_MINUTES"].to_numpy()
+    weather = delay_weather["TOTAL_DELAY_MINUTES"].to_numpy()
+    totals = non_weather + weather
+
     # stacked bar plot - includes different colour whether delay is weather related
     plt.figure(figsize=(12,6))
     plt.bar(
         delay_non_weather["DAY"].to_list(), 
-        delay_non_weather["TOTAL_DELAY_MINUTES"].to_list(), 
+        non_weather, 
         label="Non-weather related delays"
         )
     plt.bar(
         delay_weather["DAY"].to_list(), 
-        delay_weather["TOTAL_DELAY_MINUTES"].to_list(),
-        bottom=delay_non_weather["TOTAL_DELAY_MINUTES"].to_list(),
-        label="Weather related delays"
+        weather,
+        bottom=non_weather,
+        label="Weather related delays",
         )
+    # Manually set y axis limits to prevent cut off
+    plt.ylim(0, totals.max() * 1.1)  # add a bit of headroom
+    
     plt.ylabel("Delay minutes")
     plt.xlabel("Day")
     plt.title(f"Delay minutes for {month}/{year}")
