@@ -20,6 +20,9 @@ Author: CL
 import os
 import polars as pl
 
+# Local imports
+from utils.support_functions import get_data_files, load_data
+
 
 def clean_nr_data():
     """
@@ -41,10 +44,10 @@ def clean_nr_data():
     ---------
     """
     # Get list of raw data files
-    files = get_nr_files()
+    files = get_data_files("network_rail/raw_data")
     
     # Load data from files
-    raw_df = load_nr_data(files)
+    raw_df = load_data(files)
     
     # Convert station codes to full station names
     raw_df = get_full_stn_names(raw_df)
