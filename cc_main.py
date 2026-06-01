@@ -6,10 +6,11 @@ Author: CL
 """
 import argparse
 import os
+import sys
 import polars as pl
 import matplotlib.pyplot as plt
 
-
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from network_rail.nr_data_cleaning import clean_nr_data
 from network_rail.nr_plotting import plot_all_delays, plot_delays_monthly
@@ -19,7 +20,6 @@ from nhs.nhs_plotting import plot_avg_calls_dow, plot_calls_in_month
 
 from rnli.rnli_data_cleaning import clean_rnli_data
 from rnli.rnli_plotting import plot_all_callouts, plot_callouts_in_month
-
 
 plt.rcParams['svg.fonttype'] = 'none'
 
@@ -46,7 +46,7 @@ def main():
     if run_all or args.module == "train_delays":
         # Check if data has already been cleaned 
         if force_rebuild or not os.path.exists(
-            "network_rail/processed_data/cleaned_nr_data.csv"
+            "data/processed/network_rail/cleaned_nr_data.csv"
             ):
             print("Cleaning data from raw files...")
             clean_nr_data()
@@ -55,7 +55,7 @@ def main():
             print("Cleaned data file found. Loading cleaned data...")
         
         nr_data = pl.read_csv(
-            "network_rail/processed_data/cleaned_nr_data.csv",
+            "data/processed/network_rail/cleaned_nr_data.csv",
             schema_overrides={"ORIGIN_DEPARTURE_DATE": pl.Date,
                               "PFPI_MINUTES": pl.Float32,}
             )
@@ -82,7 +82,7 @@ def main():
 
     if run_all or args.module == "nhs_111":
         if force_rebuild or not os.path.exists(
-            "nhs/processed_data/iuc/cleaned_iuc_data.csv"
+            "data/processed/nhs/iuc/cleaned_iuc_data.csv"
             ):
             print("Cleaning IUC data from raw files...")
             clean_iuc_data()
@@ -90,7 +90,7 @@ def main():
         else:
             print("Cleaned IUC data file found. Loading cleaned data...")
         iuc_data = pl.read_csv(
-            "nhs/processed_data/iuc/cleaned_iuc_data.csv",
+            "data/processed/nhs/iuc/cleaned_iuc_data.csv",
             schema_overrides={"DATE": pl.Date, "VALUE": pl.Int32}
         )
         # plot_avg_calls_dow(iuc_data)
@@ -117,7 +117,7 @@ def main():
         
     if run_all or args.module == "rnli":
         if force_rebuild or not os.path.exists(
-        "rnli/processed_data/cleaned_rnli_data.csv"
+        "data/processed/rnli/cleaned_rnli_data.csv"
         ):
             print("Cleaning RNLI data from raw files...")
             clean_rnli_data()
@@ -125,7 +125,7 @@ def main():
         else:
             print("Cleaned RNLI data file found. Loading cleaned data...")
         rnli_data = pl.read_csv(
-            "rnli/processed_data/cleaned_rnli_data.csv",
+            "data/processed/rnli/cleaned_rnli_data.csv",
             schema_overrides={"DATE": pl.Date}
         )
         plot_all_callouts(rnli_data)

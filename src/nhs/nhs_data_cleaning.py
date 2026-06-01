@@ -31,7 +31,7 @@ def clean_iuc_data():
     ---------
     """
     # Get list of raw data files
-    files = get_data_files("nhs/raw_data/iuc")
+    files = get_data_files("data/raw/nhs/iuc")
     
     # Load data from files
     raw_df = load_data(files, data_type = 'iuc')
@@ -67,10 +67,10 @@ def clean_iuc_data():
     # combine with main data
     filtered_df = pl.concat([filtered_df, mds_data]).sort("DATE")
     
-    if not os.path.exists("nhs/processed_data/iuc/"):
-        os.makedirs("nhs/processed_data/iuc/")
+    if not os.path.exists("data/processed/nhs/iuc/"):
+        os.makedirs("data/processed/nhs/iuc/")
         
-    filtered_df.write_csv("nhs/processed_data/iuc/cleaned_iuc_data.csv")
+    filtered_df.write_csv("data/processed/nhs/iuc/cleaned_iuc_data.csv")
 
 
 def load_iuc_minimum_data():
@@ -93,7 +93,7 @@ def load_iuc_minimum_data():
     
     """
     # Get list of raw data files
-    files = get_data_files("nhs/raw_data/iuc_minimum_dataset")
+    files = get_data_files("data/raw/nhs/iuc_minimum_dataset")
     
     # Load data from files
     df_list = []

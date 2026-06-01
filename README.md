@@ -2,6 +2,31 @@
 
 Data processing and visualisation for the extreme weather impact assessment for Cornwall Council.
 
+## Project structure
+
+```
+cc_main.py              # Entry point
+src/
+  network_rail/         # Train delay processing and plotting
+  nhs/                  # NHS 111 IUC data processing and plotting
+  rnli/                 # RNLI lifeboat callout processing and plotting
+  utils/                # Shared helper functions
+data/
+  raw/                  # Unmodified source data
+    network_rail/
+    nhs/iuc/
+    nhs/iuc_minimum_dataset/
+    rnli/
+  processed/            # Cleaned/cached output from data cleaning steps
+    network_rail/
+    nhs/iuc/
+    rnli/
+  inputs/               # Reference/lookup files
+    network_rail/       # Attribution glossary (station codes, incident codes)
+    rnli/               # Cornwall lifeboat station list
+plots/                  # Output plots
+```
+
 ## Usage
 
 Run from the project root directory:
@@ -46,7 +71,7 @@ All plots are saved to the `plots/` directory.
 | `plots/delays_2024_11.png` | Daily delay minutes for November 2024, annotated with Storm Bert |
 | `plots/delays_2022_7.png` | Daily delay minutes for July 2022, annotated with the 2022 heatwave peak |
 
-Processed data is cached at `network_rail/processed_data/cleaned_nr_data.csv`.
+Processed data is cached at `data/processed/network_rail/cleaned_nr_data.csv`.
 
 ### NHS 111 IUC calls (`nhs_111`)
 
@@ -57,7 +82,7 @@ Processed data is cached at `network_rail/processed_data/cleaned_nr_data.csv`.
 | `plots/calls_2024_11.png` | Daily IUC calls for November 2024, annotated with Storm Bert |
 | `plots/calls_2026_1.png` | Daily IUC calls for January 2026, annotated with Storm Goretti, Storm Ingrid, and Storm Chandra |
 
-Processed data is cached at `nhs/processed_data/iuc/cleaned_iuc_data.csv`.
+Processed data is cached at `data/processed/nhs/iuc/cleaned_iuc_data.csv`.
 
 ### RNLI Lifeboat launches (`rnli`)
 
@@ -66,4 +91,4 @@ Processed data is cached at `nhs/processed_data/iuc/cleaned_iuc_data.csv`.
 | `plots/rnli_callouts_2022_7.png` | Daily lifeboat launches for July 2022, annotated with the 2022 heatwave peak |
 | `plots/rnli_callouts_2024_11.png` | Daily lifeboat launches for November 2024, annotated with Storm Bert |
 
-Processed data is cached at `nhs/processed_data/iuc/cleaned_iuc_data.csv`.
+Processed data is cached at `data/processed/rnli/cleaned_rnli_data.csv`.

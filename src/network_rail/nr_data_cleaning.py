@@ -44,7 +44,7 @@ def clean_nr_data():
     ---------
     """
     # Get list of raw data files
-    files = get_data_files("network_rail/raw_data")
+    files = get_data_files("data/raw/network_rail")
     
     # Load data from files
     raw_df = load_data(files)
@@ -92,11 +92,11 @@ def clean_nr_data():
         "IS_WEATHER_RELATED",
         "EVENT_TYPE"
     )
-    if not os.path.exists("network_rail/processed_data/"):
-        os.makedirs("network_rail/processed_data/")
+    if not os.path.exists("data/processed/network_rail/"):
+        os.makedirs("data/processed/network_rail/")
         
     cleaned_df.write_csv(
-        "network_rail/processed_data/cleaned_nr_data.csv"
+        "data/processed/network_rail/cleaned_nr_data.csv"
         )
 
 def get_nr_files():
@@ -113,9 +113,9 @@ def get_nr_files():
     """
     # check files in raw data directory and return list of file paths
     files = []
-    for filename in os.listdir("network_rail/raw_data"):
+    for filename in os.listdir("data/raw/network_rail"):
         if filename.endswith(".csv"):
-            files.append(os.path.join("network_rail/raw_data", filename))
+            files.append(os.path.join("data/raw/network_rail", filename))
     return files
 
 def load_nr_data(files):
@@ -155,7 +155,7 @@ def get_full_stn_names(df):
         DataFrame containing full station names.
     """
     # Get excel worksheet with station code to name mapping
-    supp_file = ("network_rail/supplementary_info/" 
+    supp_file = ("data/inputs/network_rail/" 
                  "Transparency page Attribution Glossary.xlsx")
     stn_mapping = pl.read_excel(
         supp_file,
@@ -220,7 +220,7 @@ def get_full_incident_codes(df):
     """
     
     # Get excel worksheet with station code to name mapping
-    supp_file = ("network_rail/supplementary_info/" 
+    supp_file = ("data/inputs/network_rail/" 
                  "Transparency page Attribution Glossary.xlsx")
     code_mapping = pl.read_excel(
         supp_file,

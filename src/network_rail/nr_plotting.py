@@ -48,7 +48,7 @@ def plot_all_delays(df):
     # get series of non weather related delays and weather related delays for plotting
     delay_weather = df.filter(pl.col("IS_WEATHER_RELATED") == True)
     delay_non_weather = df.filter(pl.col("IS_WEATHER_RELATED") == False)
-    delay_weather.write_csv("network_rail/processed_data/weather_delays.csv")
+    delay_weather.write_csv("data/processed/network_rail/weather_delays.csv")
 
     # stacked bar plot - includes different colour whether delay is weather related
     plt.figure(figsize=(12,6))

@@ -39,14 +39,14 @@ def clean_rnli_data():
     ---------
     """
     # Get list of raw data files
-    files = get_data_files("rnli/raw_data")
+    files = get_data_files("data/raw/rnli")
     
     # Load data from files
     raw_df = pl.read_csv(files[0], infer_schema=False)
     
     # filter for records where station is in Cornwall
     cornwall_stations = pl.read_csv(
-        "rnli/inputs/cornwall_lifeboat_stations.csv"
+        "data/inputs/rnli/cornwall_lifeboat_stations.csv"
         )
     raw_df = raw_df.filter(
         pl.col("LifeboatStationNameProper").is_in(
@@ -71,6 +71,6 @@ def clean_rnli_data():
     print(raw_df.head())
     
     # save cleaned data to csv
-    if not os.path.exists("rnli/processed_data"):
-        os.makedirs("rnli/processed_data")
-    raw_df.write_csv("rnli/processed_data/cleaned_rnli_data.csv")
+    if not os.path.exists("data/processed/rnli"):
+        os.makedirs("data/processed/rnli")
+    raw_df.write_csv("data/processed/rnli/cleaned_rnli_data.csv")
