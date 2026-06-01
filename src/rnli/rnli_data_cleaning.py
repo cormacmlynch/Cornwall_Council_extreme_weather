@@ -4,10 +4,6 @@ Functions for cleaning and preprocessing RNLI lifeboat callout data.
 Functions included:
     - clean_rnli_data
         Main cleaning function.
-    - get_rnli_files
-        Returns list of data files in raw data directory.
-    - load_rnli_data
-        Loads data from a file into a DataFrame.
         
 Author: CL
 """
@@ -68,7 +64,6 @@ def clean_rnli_data():
     raw_df = raw_df.sort("DATE")
     # format as counts per day
     raw_df = raw_df.group_by("DATE").agg(pl.count("STATION").alias("CALL_OUTS"))
-    print(raw_df.head())
     
     # save cleaned data to csv
     if not os.path.exists("data/processed/rnli"):
