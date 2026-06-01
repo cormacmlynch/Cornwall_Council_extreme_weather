@@ -7,12 +7,19 @@ Author: CL
 import argparse
 import os
 import polars as pl
+import matplotlib.pyplot as plt
+
+
 
 from network_rail.nr_data_cleaning import clean_nr_data
 from network_rail.nr_plotting import plot_all_delays, plot_delays_monthly
+
 from nhs.nhs_data_cleaning import clean_iuc_data
 from nhs.nhs_plotting import plot_avg_calls_dow, plot_calls_in_month
-import matplotlib.pyplot as plt
+
+from rnli.rnli_data_cleaning import clean_rnli_data
+from rnli.rnli_plotting import plot_all_callouts, plot_callouts_in_month
+
 
 plt.rcParams['svg.fonttype'] = 'none'
 
@@ -22,7 +29,7 @@ def main():
     )
     parser.add_argument(
         "--module",
-        choices=["train_delays", "nhs_111"],
+        choices=["train_delays", "nhs_111", "rnli"],
         default=None,
         help="Module to run. Omit to run all modules."
     )
@@ -107,6 +114,31 @@ def main():
                                          {"name": "Storm Ingrid", 
                                           "start": 23, "end": 24}
                                          ])
-    
+        
+    if run_all or args.module == "rnli":
+        if force_rebuild or not os.path.exists(
+        "rnli/processed_data/cleaned_rnli_data.csv"
+        ):
+            print("Cleaning RNLI data from raw files...")
+            clean_rnli_data()
+            print("Cleaned RNLI data saved.")
+        else:
+            print("Cleaned RNLI data file found. Loading cleaned data...")
+        rnli_data = pl.read_csv(
+            "rnli/processed_data/cleaned_rnli_data.csv",
+            schema_overrides={"DATE": pl.Date}
+        )
+        plot_all_callouts(rnli_data)
+        # Note: no data for 2026 available so not plotting for that year
+        plot_callouts_in_month(rnli_data, month=7, year=2022, 
+                            annotations=[{"name": "Peak of 2022 heatwave", 
+                                          "start": 16, 
+                                          "end": 19}])
+        plot_callouts_in_month(rnli_data, month=11, year=2024, 
+                            annotations=[{"name": "Storm Bert", 
+                                          "start": 22, 
+                                          "end": 25}])
+        
+
 if __name__ == "__main__":
     main()
