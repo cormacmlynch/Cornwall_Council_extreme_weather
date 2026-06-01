@@ -36,7 +36,6 @@ def plot_avg_calls_dow(df):
     plt.xlabel("Day of Week")
     plt.ylabel("Average Number of Calls")
     plt.title("Average Number of Calls per Day of Week")
-    plt.show()
     
     
 def plot_calls_in_month(df, month, year, annotations=None):
@@ -121,7 +120,7 @@ def plot_calls_in_month(df, month, year, annotations=None):
     plt.ylabel("Difference from Average Number of Calls")
     plt.title(f"Difference from Average Number of Calls per Day in {month}/{year}")
     plt.savefig(f"plots/calls_in_month_{month}_{year}.svg", format="svg")
-    plt.show()
+    print(f"Plot saved to plots/calls_in_month_{month}_{year}.svg")
 
 
 def get_day_of_week(df):

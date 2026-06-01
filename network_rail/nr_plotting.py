@@ -11,6 +11,7 @@ Author: CL
 
 """
 # Global imports
+import calendar
 import polars as pl
 import matplotlib.pyplot as plt
 
@@ -103,10 +104,24 @@ def plot_delays_monthly(df, month, year, annotations = None):
     df = convert_daily(df)
     # Filter for the specified month and year
     df = df.filter((pl.col("MONTH") == month) & (pl.col("YEAR") == year))
-    # set day column as str for plotting
-    # df = df.with_columns(
-    #     pl.col("DAY").cast(pl.Utf8)
-    # )
+
+    # Ensure all days of the month are present, even those with 0 delays
+    n_days = calendar.monthrange(year, month)[1]
+    all_days = pl.DataFrame({
+        "DAY": list(range(1, n_days + 1)),
+        "MONTH": [month] * n_days,
+        "YEAR": [year] * n_days,
+    })
+    weather_flags = df.select("IS_WEATHER_RELATED").unique()
+    all_combos = all_days.join(weather_flags, how="cross")
+    df = all_combos.join(
+        df.select(["DAY", "MONTH", "YEAR", "IS_WEATHER_RELATED", "TOTAL_DELAY_MINUTES"]),
+        on=["DAY", "MONTH", "YEAR", "IS_WEATHER_RELATED"],
+        how="left"
+    ).with_columns(
+        pl.col("TOTAL_DELAY_MINUTES").fill_null(0)
+    ).sort(["DAY", "IS_WEATHER_RELATED"])
+
     # get series of non weather related delays and weather related delays for plotting
     delay_weather = df.filter(pl.col("IS_WEATHER_RELATED") == True)
     delay_non_weather = df.filter(pl.col("IS_WEATHER_RELATED") == False)
