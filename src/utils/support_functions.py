@@ -31,7 +31,7 @@ def get_data_files(directory):
     """
     files = []
     for filename in os.listdir(directory):
-        if filename.endswith(".csv"):
+        if filename.lower().endswith((".csv", ".ods", ".xlsx")):
             files.append(os.path.join(directory, filename))
     return files
 
