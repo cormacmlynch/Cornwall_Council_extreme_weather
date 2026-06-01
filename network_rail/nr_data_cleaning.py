@@ -92,6 +92,9 @@ def clean_nr_data():
         "IS_WEATHER_RELATED",
         "EVENT_TYPE"
     )
+    if not os.path.exists("network_rail/processed_data/"):
+        os.makedirs("network_rail/processed_data/")
+        
     cleaned_df.write_csv(
         "network_rail/processed_data/cleaned_nr_data.csv"
         )
