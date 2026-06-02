@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from cornwall_council.cc_data_cleaning import clean_cc_collisions_data
 from network_rail.nr_data_cleaning import clean_nr_data
 from network_rail.nr_plotting import plot_all_delays, plot_delays_monthly
 
@@ -21,6 +20,10 @@ from nhs.nhs_plotting import plot_avg_calls_dow, plot_calls_in_month
 
 from rnli.rnli_data_cleaning import clean_rnli_data
 from rnli.rnli_plotting import plot_all_callouts, plot_callouts_in_month
+
+
+from cornwall_council.cc_data_cleaning import clean_cc_collisions_data
+from cornwall_council.cc_plotting import plot_all_collisions, plot_collisions_in_month
 
 plt.rcParams['svg.fonttype'] = 'none'
 
@@ -153,6 +156,17 @@ def main():
             "data/processed/cornwall_council/collisions/cleaned_collisions_data.csv",
             schema_overrides={"DATE": pl.Date}
         )
+        plot_all_collisions(collisions_data)
+        plot_collisions_in_month(collisions_data, month=7, year=2022,
+                            annotations=[{"name": "Peak of 2022 heatwave",
+                                            "start": 16,
+                                            "end": 19}])
+        plot_collisions_in_month(collisions_data, month=11, year=2024,
+                            annotations=[{"name": "Storm Bert",
+                                            "start": 22,
+                                            "end": 25}])
+        
+        
         
 
 if __name__ == "__main__":
