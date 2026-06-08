@@ -44,7 +44,7 @@ python cc_main.py [--module {train_delays,nhs_111}] [--force-rebuild]
 | `--module rnli` | Run only the RNLI lifeboat launches module|
 | *(omit `--module`)* | Run all modules |
 | `--force-rebuild` | Re-process raw data even if cleaned files already exist |
-
+| `--save-svgs` | Save plots as svg files (note this overwrites any edited svgs)
 ### Examples
 
 ```bash
