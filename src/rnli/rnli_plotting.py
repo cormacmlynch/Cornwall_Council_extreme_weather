@@ -21,7 +21,7 @@ plt.rcParams["font.family"] = "Outfit"
 plt.rcParams["font.size"] = 16
 
 
-def plot_all_callouts(df):
+def plot_all_callouts(df, save_svgs=False):
     """
     Shows total callout counts per month across the full dataset.
 
@@ -31,7 +31,8 @@ def plot_all_callouts(df):
     -----------
     df: DataFrame
         Cleaned RNLI callout data with DATE (pl.Date) and CALL_OUTS columns.
-
+    save_svgs: bool
+        Whether to save the plot as an SVG file in addition to PNG.
     Returns
     ----------
     None
@@ -58,9 +59,12 @@ def plot_all_callouts(df):
     plt.title("RNLI callouts per month")
     plt.savefig("plots/rnli_all_callouts.png", bbox_inches="tight")
     print("All callouts plot saved to plots/rnli_all_callouts.png")
+    if save_svgs:
+        plt.savefig("plots/rnli_all_callouts.svg", format="svg")
+        print("Plot saved to plots/rnli_all_callouts.svg")
 
 
-def plot_callouts_in_month(df, month, year, annotations=None):
+def plot_callouts_in_month(df, month, year, annotations=None, save_svgs=False):
     """
     Shows callout counts per day for a given month and year.
 
@@ -76,7 +80,8 @@ def plot_callouts_in_month(df, month, year, annotations=None):
     year: int
         Year to plot (e.g. 2023).
     annotations: list of dicts, optional (e.g., name, start, end)
-
+    save_svgs: bool, optional
+        Whether to save the plot as an SVG file in addition to PNG.
     Returns
     ----------
     None
@@ -122,3 +127,6 @@ def plot_callouts_in_month(df, month, year, annotations=None):
     plt.margins(x=.01)
     plt.savefig(f"plots/rnli_callouts_{year}_{month}.png", bbox_inches="tight")
     print(f"RNLI callouts for {month}/{year} saved to plots/rnli_callouts_{year}_{month}.png")
+    if save_svgs:
+        plt.savefig(f"plots/rnli_callouts_{year}_{month}.svg", format="svg")
+        print(f"Plot saved to plots/rnli_callouts_{year}_{month}.svg")

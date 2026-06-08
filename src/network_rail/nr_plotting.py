@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "Outfit"
 plt.rcParams["font.size"] = 16
 
-def plot_all_delays(df):
+def plot_all_delays(df, save_svgs=False):
     """
     Shows delay minutes of all delays.
 
@@ -29,7 +29,8 @@ def plot_all_delays(df):
     -----------
     df: DataFrame
         Cleaned Network Rail delay data.
-
+    save_svgs: bool
+            Whether to save plots as SVG files as well as PNG. 
     Returns
     ----------
     None
@@ -70,9 +71,12 @@ def plot_all_delays(df):
     plt.legend()
     plt.savefig("plots/all_delays.png", bbox_inches="tight")   
     print("All delays plot saved to plots/all_delays.png") 
+    if save_svgs:
+        plt.savefig("plots/all_delays.svg", bbox_inches="tight")   
+        print("All delays plot saved to plots/all_delays.svg")
 
 
-def plot_delays_monthly(df, month, year, annotations = None):
+def plot_delays_monthly(df, month, year, annotations = None, save_svgs=False):
     """
     Shows delay minutes of all delays in a given month
 
@@ -87,7 +91,8 @@ def plot_delays_monthly(df, month, year, annotations = None):
     year: int
         Year to filter the data by (e.g. 2023).
     annotations: list of dicts, optional (e.g., name, start, end)
-
+    save_svgs: bool
+            Whether to save plots as SVG files as well as PNG. 
     Returns
     ----------
     None
@@ -133,48 +138,63 @@ def plot_delays_monthly(df, month, year, annotations = None):
     # stacked bar plot - includes different colour whether delay is weather related
     plt.figure(figsize=(12,6))
     plt.bar(
-        delay_non_weather["DAY"].to_list(), 
-        non_weather, 
-        label="Non-weather related delays"
-        )
-    plt.bar(
         delay_weather["DAY"].to_list(), 
         weather,
         bottom=non_weather,
         label="Weather related delays",
+        color="#69b3e7"
+        )
+    plt.bar(
+        delay_non_weather["DAY"].to_list(), 
+        non_weather, 
+        label="Non-weather related delays",
+        color="#007d69"
         )
     # Manually set y axis limits to prevent cut off
     plt.ylim(0, totals.max() * 1.1)  # add a bit of headroom
-    
+    # format y labels with commas
+    # plt.gca().set_yticklabels([f"{int(x):,}" for x in plt.gca().get_yticks()])
+    plt.gca().set_yticks(plt.gca().get_yticks())
+    plt.gca().set_yticklabels([f"{int(x):,}" for x in plt.gca().get_yticks()])
+
     plt.ylabel("Delay minutes")
-    plt.xlabel("Day")
-    plt.title(f"Delay minutes for {month}/{year}")
+    plt.xlabel(f"Day of {calendar.month_name[month]} {year}")
     # plot all x axis labels
     plt.xticks(delay_non_weather["DAY"].to_list())
     
     if annotations is not None:
         for annotation in annotations:
+            # ensure shaded area behind the bars
             plt.axvspan(
-                annotation["start"] - .5, annotation["end"] + .5, color='red', 
-                alpha=0.2, linestyle='--'
+                annotation["start"] - .5, annotation["end"] + .5, color='#e60000', 
+                alpha=0.2, linestyle='--', zorder=0
                 )
             if annotation["name"] == "Storm Chandra":
-                x_coord = annotation["end"] + 2.3
+                x_coord = annotation["end"] + 2.5
             else:                
                 x_coord = annotation["start"] - 2.3
+                
+            # if annoation contains "Storm" add new line
+            if "Storm" in annotation["name"]:
+                annotation["name"] = annotation["name"].replace(" ", "\n")
             plt.text(
                 x_coord, 
                 plt.ylim()[1]*0.75, 
                 annotation["name"], 
-                color='red', 
-                ha='center',
-                fontsize=11
+                color='#e60000', 
+                ha='left',
+                fontsize=14
                 )
-    plt.legend(loc="upper right")
+    plt.legend(loc="upper left")
     plt.margins(x=.01)
 
     plt.savefig(f"plots/delays_{year}_{month}.png", bbox_inches="tight")
     print(f"Delays for {month}/{year} saved to plots/delays_{year}_{month}.png")
+
+    if save_svgs:
+        plt.savefig(f"plots/delays_{year}_{month}.svg", bbox_inches="tight")
+        print(f"Delays for {month}/{year} saved to plots/delays_{year}_{month}.svg")
+
 
 def convert_monthly(df):
     """

@@ -10,7 +10,7 @@ Author: CL
 import polars as pl
 import matplotlib.pyplot as plt
 
-def plot_avg_calls_dow(df):
+def plot_avg_calls_dow(df, save_svgs=False):
     """
     Plots average number of calls per day of week.
 
@@ -18,7 +18,8 @@ def plot_avg_calls_dow(df):
     -----------
     df: DataFrame
         Cleaned IUC NHS data.
-
+    save_svgs: bool
+        Whether to save the plot as an SVG file in addition to PNG. 
     Returns
     ----------
     None
@@ -36,9 +37,11 @@ def plot_avg_calls_dow(df):
     plt.xlabel("Day of Week")
     plt.ylabel("Average Number of Calls")
     plt.title("Average Number of Calls per Day of Week")
+    if save_svgs:
+        plt.savefig("plots/avg_calls_dow.svg", format="svg")
+        print("Plot saved to plots/avg_calls_dow.svg")
     
-    
-def plot_calls_in_month(df, month, year, annotations=None):
+def plot_calls_in_month(df, month, year, annotations=None, save_svgs=False):
     """
     Plots for each day in the given month,
     the difference from daily average number of calls for a given month and year.
@@ -52,6 +55,8 @@ def plot_calls_in_month(df, month, year, annotations=None):
     year: int
         Year to plot.
     annotations: list of dicts optional (e.g., name, start, end)
+    save_svgs: bool, optional
+        Whether to save the plot as an SVG file in addition to PNG.
 
     Returns
     ----------
@@ -119,8 +124,9 @@ def plot_calls_in_month(df, month, year, annotations=None):
     plt.xlabel("Date")
     plt.ylabel("Difference from Average Number of Calls")
     plt.title(f"Difference from Average Number of Calls per Day in {month}/{year}")
-    plt.savefig(f"plots/calls_in_month_{month}_{year}.svg", format="svg")
-    print(f"Plot saved to plots/calls_in_month_{month}_{year}.svg")
+    if save_svgs:
+        plt.savefig(f"plots/calls_in_month_{month}_{year}.svg", format="svg")
+        print(f"Plot saved to plots/calls_in_month_{month}_{year}.svg")
 
 
 def get_day_of_week(df):

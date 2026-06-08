@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from network_rail.nr_data_cleaning import clean_nr_data
 from network_rail.nr_plotting import plot_all_delays, plot_delays_monthly
+from network_rail.nr_stats import get_weather_delay_stats
 
 from nhs.nhs_data_cleaning import clean_iuc_data
 from nhs.nhs_plotting import plot_avg_calls_dow, plot_calls_in_month
@@ -24,8 +25,6 @@ from rnli.rnli_plotting import plot_all_callouts, plot_callouts_in_month
 
 from cornwall_council.cc_data_cleaning import clean_cc_collisions_data
 from cornwall_council.cc_plotting import plot_all_collisions, plot_collisions_in_month
-
-plt.rcParams['svg.fonttype'] = 'none'
 
 def main():
     parser = argparse.ArgumentParser(
@@ -42,10 +41,17 @@ def main():
         action="store_true",
         help="Force rebuild of processed data from raw files."
     )
+    parser.add_argument(
+        "--save-svgs",
+        action="store_true",
+        help="""Save plots as SVG files as well as PNG. Note: this will 
+        overwrite any existing SVG files in the plots directory."""
+    )
     args = parser.parse_args()
 
     run_all = args.module is None
     force_rebuild = args.force_rebuild
+    save_svgs = args.save_svgs
 
     if run_all or args.module == "train_delays":
         # Check if data has already been cleaned 
@@ -63,7 +69,7 @@ def main():
             schema_overrides={"ORIGIN_DEPARTURE_DATE": pl.Date,
                               "PFPI_MINUTES": pl.Float32,}
             )
-        plot_all_delays(nr_data)
+        plot_all_delays(nr_data, save_svgs=save_svgs)
         # January 2026
         plot_delays_monthly(nr_data, month=1, year=2026, 
                             annotations=[{"name": "Storm Goretti", 
@@ -72,17 +78,32 @@ def main():
                                           "start": 26, "end": 27},
                                          {"name": "Storm Ingrid", 
                                           "start": 23, "end": 24}
-                                         ])
+                                         ],
+                            save_svgs=save_svgs)
+        goretti_stats = get_weather_delay_stats(
+            nr_data, month=1, year=2026, date_range=(1, 31)
+            )
+        print(f"January storms delay stats: {goretti_stats}")
         # November 2024
         plot_delays_monthly(nr_data, month=11, year=2024, 
                             annotations=[{"name": "Storm Bert", 
                                           "start": 22, "end": 25}
-                                         ])
+                                         ],
+                            save_svgs=save_svgs)
+        bert_stats = get_weather_delay_stats(
+            nr_data, month=11, year=2024, date_range=(22, 25)
+            )
+        print(f"Storm Bert delay stats: {bert_stats}")
         # July 2022
         plot_delays_monthly(nr_data, month=7, year=2022, 
-                            annotations=[{"name": "2022 heatwave peak", 
+                            annotations=[{"name": "2022 heatwave\npeak", 
                                           "start": 16, "end": 19}
-                                         ])
+                                         ],
+                            save_svgs=save_svgs)
+        heatwave_stats = get_weather_delay_stats(
+            nr_data, month=7, year=2022, date_range=(16, 19)
+            )
+        print(f"2022 heatwave delay stats: {heatwave_stats}")
 
     if run_all or args.module == "nhs_111":
         if force_rebuild or not os.path.exists(
@@ -101,15 +122,18 @@ def main():
         plot_calls_in_month(iuc_data, month=3, year=2018, 
                             annotations=[{"name": "Beast from the East", 
                                           "start": 1, 
-                                          "end": 5}])
+                                          "end": 5}],
+                            save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=7, year=2022, 
                             annotations=[{"name": "Peak of 2022 heatwave", 
                                           "start": 16, 
-                                          "end": 19}])
+                                          "end": 19}],
+                            save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=11, year=2024, 
                             annotations=[{"name": "Storm Bert", 
                                           "start": 22, 
-                                          "end": 25}])
+                                          "end": 25}],
+                            save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=1, year=2026, 
                             annotations=[{"name": "Storm Goretti", 
                                           "start": 8, "end": 9}, 
@@ -117,7 +141,8 @@ def main():
                                           "start": 26, "end": 27},
                                          {"name": "Storm Ingrid", 
                                           "start": 23, "end": 24}
-                                         ])
+                                         ],
+                            save_svgs=save_svgs)
         
     if run_all or args.module == "rnli":
         if force_rebuild or not os.path.exists(
@@ -137,11 +162,13 @@ def main():
         plot_callouts_in_month(rnli_data, month=7, year=2022, 
                             annotations=[{"name": "Peak of 2022 heatwave", 
                                           "start": 16, 
-                                          "end": 19}])
+                                          "end": 19}],
+                            save_svgs=save_svgs)
         plot_callouts_in_month(rnli_data, month=11, year=2024, 
                             annotations=[{"name": "Storm Bert", 
                                           "start": 22, 
-                                          "end": 25}])
+                                          "end": 25}],
+                            save_svgs=save_svgs)
         
     if run_all or args.module == "collisions":
         if force_rebuild or not os.path.exists(
@@ -156,15 +183,17 @@ def main():
             "data/processed/cornwall_council/collisions/cleaned_collisions_data.csv",
             schema_overrides={"DATE": pl.Date}
         )
-        plot_all_collisions(collisions_data)
+        plot_all_collisions(collisions_data, save_svgs=save_svgs)
         plot_collisions_in_month(collisions_data, month=7, year=2022,
                             annotations=[{"name": "Peak of 2022 heatwave",
                                             "start": 16,
-                                            "end": 19}])
+                                            "end": 19}],
+                            save_svgs=save_svgs)
         plot_collisions_in_month(collisions_data, month=11, year=2024,
                             annotations=[{"name": "Storm Bert",
                                             "start": 22,
-                                            "end": 25}])
+                                            "end": 25}],
+                            save_svgs=save_svgs)
         
         
         

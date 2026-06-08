@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "Outfit"
 plt.rcParams["font.size"] = 16
 
-def plot_all_collisions(df):
+def plot_all_collisions(df, save_svgs=False):
     """
     Shows total collision counts per month across the full dataset,
     stacked by IS_ADVERSE_WEATHER flag.
@@ -33,7 +33,8 @@ def plot_all_collisions(df):
     df: DataFrame
         Cleaned Cornwall Council collisions data with DATE (pl.Date),
         COLLISIONS, and IS_ADVERSE_WEATHER columns.
-
+    save_svgs: bool, optional
+        Whether to save the plot as an SVG file.
     Returns
     ----------
     None
@@ -94,10 +95,11 @@ def plot_all_collisions(df):
     plt.xticks(rotation=45)
     plt.legend(title="Is weather adverse?")
     plt.tight_layout()
-    plt.show()
+    if save_svgs:
+        plt.savefig("plots/collisions_by_month.svg", format="svg")    
     
-    
-def plot_collisions_in_month(df, month, year, annotations=None):
+def plot_collisions_in_month(df, month, year, annotations=None, 
+                             save_svgs=False):
     """
     Shows collision counts per day for a given month and year.
 
@@ -113,7 +115,8 @@ def plot_collisions_in_month(df, month, year, annotations=None):
     year: int
         Year to plot (e.g. 2023).
     annotations: list of dicts, optional (e.g., name, start, end)
-
+    save_svgs: bool, optional
+        Whether to save the plot as an SVG file.
     Returns
     ----------
     None
@@ -197,4 +200,5 @@ def plot_collisions_in_month(df, month, year, annotations=None):
     plt.legend(title="Is weather adverse?", loc="upper right")
     plt.margins(x=0.01)
     plt.tight_layout()
-    plt.savefig(f"plots/collisions_{year}_{month}.svg", format="svg")
+    if save_svgs:
+        plt.savefig(f"plots/collisions_{year}_{month}.svg", format="svg")
