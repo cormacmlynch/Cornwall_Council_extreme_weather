@@ -119,27 +119,22 @@ def main():
             schema_overrides={"DATE": pl.Date, "VALUE": pl.Int32}
         )
         # plot_avg_calls_dow(iuc_data)
-        plot_calls_in_month(iuc_data, month=3, year=2018, 
-                            annotations=[{"name": "Beast from the East", 
-                                          "start": 1, 
-                                          "end": 5}],
-                            save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=7, year=2022, 
-                            annotations=[{"name": "Peak of 2022 heatwave", 
+                            annotations=[{"name": "2022 heatwave\npeak", 
                                           "start": 16, 
                                           "end": 19}],
                             save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=11, year=2024, 
-                            annotations=[{"name": "Storm Bert", 
+                            annotations=[{"name": "Storm\nBert", 
                                           "start": 22, 
                                           "end": 25}],
                             save_svgs=save_svgs)
         plot_calls_in_month(iuc_data, month=1, year=2026, 
-                            annotations=[{"name": "Storm Goretti", 
+                            annotations=[{"name": "Storm\nGoretti", 
                                           "start": 8, "end": 9}, 
-                                         {"name": "Storm Chandra", 
+                                         {"name": "Storm\nChandra", 
                                           "start": 26, "end": 27},
-                                         {"name": "Storm Ingrid", 
+                                         {"name": "Storm\nIngrid", 
                                           "start": 23, "end": 24}
                                          ],
                             save_svgs=save_svgs)
@@ -160,12 +155,12 @@ def main():
         plot_all_callouts(rnli_data)
         # Note: no data for 2026 available so not plotting for that year
         plot_callouts_in_month(rnli_data, month=7, year=2022, 
-                            annotations=[{"name": "Peak of 2022 heatwave", 
+                            annotations=[{"name": "2022 heatwave\npeak", 
                                           "start": 16, 
                                           "end": 19}],
                             save_svgs=save_svgs)
         plot_callouts_in_month(rnli_data, month=11, year=2024, 
-                            annotations=[{"name": "Storm Bert", 
+                            annotations=[{"name": "Storm\nBert", 
                                           "start": 22, 
                                           "end": 25}],
                             save_svgs=save_svgs)
@@ -185,12 +180,12 @@ def main():
         )
         plot_all_collisions(collisions_data, save_svgs=save_svgs)
         plot_collisions_in_month(collisions_data, month=7, year=2022,
-                            annotations=[{"name": "Peak of 2022 heatwave",
+                            annotations=[{"name": "2022 heatwave\npeak",
                                             "start": 16,
                                             "end": 19}],
                             save_svgs=save_svgs)
         plot_collisions_in_month(collisions_data, month=11, year=2024,
-                            annotations=[{"name": "Storm Bert",
+                            annotations=[{"name": "Storm\nBert",
                                             "start": 22,
                                             "end": 25}],
                             save_svgs=save_svgs)

@@ -158,8 +158,8 @@ def plot_collisions_in_month(df, month, year, annotations=None,
     )
 
     collisions_no = daily.filter(pl.col("WEATHER") == "no")
-    collisions_yes = daily.filter(pl.col("WEATHER") == "yes")
     collisions_maybe = daily.filter(pl.col("WEATHER") == "maybe")
+    collisions_yes = daily.filter(pl.col("WEATHER") == "yes")
 
     day_vals = collisions_no["DAY"].to_list()
     no_vals = collisions_no["TOTAL_COLLISIONS"].to_numpy()
@@ -168,37 +168,42 @@ def plot_collisions_in_month(df, month, year, annotations=None,
     totals = no_vals + yes_vals + maybe_vals
 
     plt.figure(figsize=(12, 6))
-    plt.bar(day_vals, no_vals, label="No", color="#6AA84F")
-    plt.bar(day_vals, yes_vals, bottom=no_vals, label="Yes", color="#CC4125")
-    plt.bar(day_vals, maybe_vals, bottom=no_vals + yes_vals, label="Maybe", color="#F1C232")
+    plt.bar(day_vals, no_vals, label="No", color="#007d69")
+    plt.bar(day_vals, maybe_vals, bottom=no_vals + yes_vals, label="Maybe", color="#ffc72c")
+    plt.bar(day_vals, yes_vals, bottom=no_vals, label="Yes", color="#f9423a")
 
     max_total = float(totals.max()) if len(totals) > 0 else 0.0
     plt.ylim(0, max_total * 1.1 if max_total > 0 else 1)
 
-    plt.ylabel("Collisions")
-    plt.xlabel("Day")
-    plt.title(f"Collisions in {calendar.month_name[month]} {year}")
+    plt.ylabel("Number of Collisions")
+    plt.xlabel(f"Day of {calendar.month_name[month]} {year}")
     plt.xticks(day_vals)
+    # Force the y-axis to only use integer ticks
+    plt.gca().yaxis.get_major_locator().set_params(integer=True)
 
+    
     if annotations is not None:
         for annotation in annotations:
             plt.axvspan(
                 annotation["start"] - 0.5,
                 annotation["end"] + 0.5,
-                color="red",
-                alpha=0.2
+                color="#e60000",
+                alpha=0.2,
+                linestyle='--',
+                zorder=0
             )
             plt.text(
                 (annotation["start"] + annotation["end"]) / 2,
                 plt.ylim()[1] * 0.85,
                 annotation["name"],
-                color="red",
-                ha="center",
-                fontsize=11
+                color="#e60000",
+                ha="left",
+                fontsize=14
             )
 
-    plt.legend(title="Is weather adverse?", loc="upper right")
+    plt.legend(title="Is weather adverse?")
     plt.margins(x=0.01)
     plt.tight_layout()
     if save_svgs:
-        plt.savefig(f"plots/collisions_{year}_{month}.svg", format="svg")
+        plt.savefig(f"plots/collisions_{year}_{month}.svg", format="svg", 
+                    bbox_inches="tight")

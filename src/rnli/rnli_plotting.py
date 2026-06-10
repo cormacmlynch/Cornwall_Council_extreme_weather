@@ -101,32 +101,34 @@ def plot_callouts_in_month(df, month, year, annotations=None, save_svgs=False):
     ).sort("DAY")
 
     plt.figure(figsize=(12, 6))
-    plt.bar(df["DAY"].to_list(), df["CALL_OUTS"].to_list())
+    plt.bar(df["DAY"].to_list(), df["CALL_OUTS"].to_list(),
+            color="#007d69")
     plt.ylim(0, df["CALL_OUTS"].max() * 1.1)
-    plt.ylabel("Number of callouts")
-    plt.xlabel("Day")
-    plt.title(f"RNLI callouts for {month}/{year}")
+    plt.ylabel("Number of lifeboat callouts")
+    plt.xlabel(f"Day of {calendar.month_name[month]} {year}")
     plt.xticks(df["DAY"].to_list())
+    # format y ticks as int
+    plt.yticks(range(0, int(df["CALL_OUTS"].max()) + 1, max(1, int(df["CALL_OUTS"].max() // 5))))
 
     if annotations is not None:
         for annotation in annotations:
             plt.axvspan(
-                annotation["start"] - .5, annotation["end"] + .5, color='red',
-                alpha=0.2, linestyle='--'
+                annotation["start"] - .5, annotation["end"] + .5, color='#e60000',
+                alpha=0.2, linestyle='--', zorder=0
             )
             x_coord = annotation["start"] - 2.3
             plt.text(
                 x_coord,
                 plt.ylim()[1] * 0.75,
                 annotation["name"],
-                color='red',
-                ha='center',
-                fontsize=11
+                color='#e60000',
+                ha='left',
+                fontsize=14
             )
 
     plt.margins(x=.01)
     plt.savefig(f"plots/rnli_callouts_{year}_{month}.png", bbox_inches="tight")
     print(f"RNLI callouts for {month}/{year} saved to plots/rnli_callouts_{year}_{month}.png")
     if save_svgs:
-        plt.savefig(f"plots/rnli_callouts_{year}_{month}.svg", format="svg")
+        plt.savefig(f"plots/rnli_callouts_{year}_{month}.svg", format="svg", bbox_inches="tight")
         print(f"Plot saved to plots/rnli_callouts_{year}_{month}.svg")

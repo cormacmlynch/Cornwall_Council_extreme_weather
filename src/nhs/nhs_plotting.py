@@ -7,6 +7,8 @@ Author: CL
 """
 
 # global imports
+import calendar
+
 import polars as pl
 import matplotlib.pyplot as plt
 
@@ -102,30 +104,34 @@ def plot_calls_in_month(df, month, year, annotations=None, save_svgs=False):
         pl.col("DATE").dt.day().alias("DAY")
     )
     
-    plt.figure(figsize=(10, 6))
-    plt.bar(df["DAY"], df["VALUE"])
+    plt.figure(figsize=(12, 6))
+    plt.bar(df["DAY"].to_list(), df["VALUE"].to_list(),
+            color="#007d69")
+    plt.xticks(df["DAY"].to_list())
+    plt.margins(x=.01)
     
     if annotations is not None:
         for annotation in annotations:
             plt.axvspan(
-                annotation["start"] - .5, annotation["end"] + .5, color='red', 
-                alpha=0.2, linestyle='--'
+                annotation["start"] - .5, annotation["end"] + .5, color='#e60000', 
+                alpha=0.2, linestyle='--',
+                zorder=0
                 )
             x_coord = annotation["start"] - 2.3
             plt.text(
                 x_coord, 
                 plt.ylim()[1]*0.75, 
                 annotation["name"], 
-                color='red', 
-                ha='center',
-                fontsize=11
+                color='#e60000', 
+                ha='left',
+                fontsize=14
                 )
     
-    plt.xlabel("Date")
+    plt.xlabel(f"Day of {calendar.month_name[month]} {year}")
     plt.ylabel("Difference from Average Number of Calls")
-    plt.title(f"Difference from Average Number of Calls per Day in {month}/{year}")
+
     if save_svgs:
-        plt.savefig(f"plots/calls_in_month_{month}_{year}.svg", format="svg")
+        plt.savefig(f"plots/calls_in_month_{month}_{year}.svg", format="svg", bbox_inches="tight")
         print(f"Plot saved to plots/calls_in_month_{month}_{year}.svg")
 
 
