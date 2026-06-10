@@ -22,9 +22,10 @@ from nhs.nhs_plotting import plot_avg_calls_dow, plot_calls_in_month
 from rnli.rnli_data_cleaning import clean_rnli_data
 from rnli.rnli_plotting import plot_all_callouts, plot_callouts_in_month
 
-
 from cornwall_council.cc_data_cleaning import clean_cc_collisions_data
 from cornwall_council.cc_plotting import plot_all_collisions, plot_collisions_in_month
+
+from ons.ons_stats import get_ons_mortality_stats
 
 def main():
     parser = argparse.ArgumentParser(
@@ -32,7 +33,7 @@ def main():
     )
     parser.add_argument(
         "--module",
-        choices=["train_delays", "nhs_111", "rnli", "collisions"],
+        choices=["train_delays", "nhs_111", "rnli", "collisions", "ons_mortality"],
         default=None,
         help="Module to run. Omit to run all modules."
     )
@@ -190,8 +191,9 @@ def main():
                                             "end": 25}],
                             save_svgs=save_svgs)
         
-        
-        
+    if run_all or args.module == "ons_mortality":
+        heat_mortality_stats = get_ons_mortality_stats()
+        print(heat_mortality_stats)
 
 if __name__ == "__main__":
     main()
